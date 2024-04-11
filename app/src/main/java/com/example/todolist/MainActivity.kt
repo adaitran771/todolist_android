@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         lvCongViec.setOnItemClickListener { parent, view, position, id ->
             var alert = AlertDialog.Builder(this)
             alert.setTitle("Delete")
-            alert.setMessage("Bạn đã hoàn thành công việc?  nhấn YES để xóa !")
+            alert.setMessage("Xong r ha em?  nhấn YES để xóa !")
             alert.setCancelable(true)
             alert.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
                 itemList.removeAt(position)
