@@ -8,7 +8,7 @@
         android:title="Đã xong"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="notdone"
+        android:id="@+id/notdone"
         android:icon="@drawable/baseline_unpublished_24"
         android:title="Chưa xong"
         app:showAsAction="ifRoom"/>
