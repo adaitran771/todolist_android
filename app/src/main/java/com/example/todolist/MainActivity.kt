@@ -3,6 +3,7 @@ package com.example.todolist
 import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_main.*
@@ -11,6 +12,7 @@ class MainActivity : AppCompatActivity() {
 
     var itemList = ArrayList<String>()
     var fileHelper = FileHelper()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -48,5 +50,10 @@ class MainActivity : AppCompatActivity() {
             alert.create()
             alert.show()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
     }
 }
