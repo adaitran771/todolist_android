@@ -54,6 +54,8 @@ class MainActivity : AppCompatActivity() {
             itemList.add(Item)
             edttitle.setText("")
             edtdes.setText("")
+            edtDate.setText("")
+            edtLocation.setText("")
             //thêm vào database
             taskHelper.addTodoItem(Item)
             TaskAdapter.notifyDataSetChanged()
