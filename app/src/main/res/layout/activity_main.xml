@@ -3,47 +3,60 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:background="#43B2E4"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    android:padding="16dp"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <!-- EditText for task title -->
+    <EditText
+        android:id="@+id/edttitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:orientation="horizontal">
+        android:hint="Enter task title"
+        android:textStyle="italic"
+        android:padding="8dp"/>
 
-        <EditText
-            android:id="@+id/edttitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:textStyle="italic"
-            android:hint="Nhập vào việc cần làm" />
+    <!-- EditText for task date -->
+    <EditText
+        android:id="@+id/edtDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter date"
+        android:inputType="date"
+        android:padding="8dp"/>
 
-        <Button
-            android:id="@+id/btnAdd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Add" />
-    </LinearLayout>
+    <!-- EditText for task location -->
+    <EditText
+        android:id="@+id/edtLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter location"
+        android:padding="8dp"/>
 
+    <!-- EditText for task description -->
     <EditText
         android:id="@+id/edtdes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="des" />
+        android:hint="Enter description"
+        android:padding="8dp"/>
 
+    <!-- Button to add task -->
+    <Button
+        android:id="@+id/btnAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add"
+        android:layout_marginTop="8dp"/>
+
+    <!-- ListView to display tasks -->
     <ListView
         android:id="@+id/lvCongViec"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp"/>
+
 </LinearLayout>

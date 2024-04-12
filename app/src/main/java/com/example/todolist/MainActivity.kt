@@ -4,6 +4,8 @@ import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
+import android.widget.Button
+import android.widget.EditText
 
 import android.widget.ListView
 import androidx.appcompat.app.AlertDialog
@@ -34,11 +36,20 @@ class MainActivity : AppCompatActivity() {
         TaskAdapter = lvAdapter(this, itemList)
         lvTask.adapter = TaskAdapter
 
+        val btnAdd = findViewById<Button>(R.id.btnAdd)
+        val edtTitle = findViewById<EditText>(R.id.edttitle)
+        val edtDate = findViewById<EditText>(R.id.edtDate)
+        val edtLocation = findViewById<EditText>(R.id.edtLocation)
+        val edtDes = findViewById<EditText>(R.id.edtdes)
+
 
         btnAdd.setOnClickListener{
-            var itemTitle = edttitle.text.toString()
-            var itemDes = edtdes.text.toString()
-            val Item = Task(0,itemTitle, itemDes)
+            val title = edtTitle.text.toString()
+            val date = edtDate.text.toString()
+            val location = edtLocation.text.toString()
+            val description = edtDes.text.toString()
+
+            val Item = Task(0, title, description, date, location)
             //thêm vào list ảo
             itemList.add(Item)
             edttitle.setText("")

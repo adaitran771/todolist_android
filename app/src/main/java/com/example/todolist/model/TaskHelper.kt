@@ -1,4 +1,5 @@
 package com.example.todolist.model
+
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
@@ -16,13 +17,17 @@ class TaskHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         private const val COLUMN_ID = "id"
         private const val COLUMN_TITLE = "title"
         private const val COLUMN_DESCRIPTION = "description"
+        private const val COLUMN_DATE = "date"
+        private const val COLUMN_LOCATION = "location"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
         val CREATE_TABLE_QUERY = ("CREATE TABLE $TABLE_NAME " +
                 "($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "$COLUMN_TITLE TEXT, " +
-                "$COLUMN_DESCRIPTION TEXT)")
+                "$COLUMN_DESCRIPTION TEXT, " +
+                "$COLUMN_DATE TEXT, " +
+                "$COLUMN_LOCATION TEXT)")
         db.execSQL(CREATE_TABLE_QUERY)
     }
 
@@ -36,6 +41,8 @@ class TaskHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         val values = ContentValues()
         values.put(COLUMN_TITLE, todoItem.title)
         values.put(COLUMN_DESCRIPTION, todoItem.description)
+        values.put(COLUMN_DATE, todoItem.date)
+        values.put(COLUMN_LOCATION, todoItem.location)
         val id = db.insert(TABLE_NAME, null, values)
         db.close()
         return id
@@ -53,7 +60,9 @@ class TaskHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, nu
                     val id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID))
                     val title = cursor.getString(cursor.getColumnIndex(COLUMN_TITLE))
                     val description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION))
-                    val todoItem = Task(id, title, description)
+                    val date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE))
+                    val location = cursor.getString(cursor.getColumnIndex(COLUMN_LOCATION))
+                    val todoItem = Task(id, title, description, date, location)
                     todoItems.add(todoItem)
                 } while (cursor.moveToNext())
             }
@@ -62,12 +71,13 @@ class TaskHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         return todoItems
     }
 
-
     fun updateTodoItem(todoItem: Task): Int {
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(COLUMN_TITLE, todoItem.title)
         values.put(COLUMN_DESCRIPTION, todoItem.description)
+        values.put(COLUMN_DATE, todoItem.date)
+        values.put(COLUMN_LOCATION, todoItem.location)
         return db.update(TABLE_NAME, values, "$COLUMN_ID = ?", arrayOf(todoItem.id.toString()))
     }
 
