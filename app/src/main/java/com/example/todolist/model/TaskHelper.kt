@@ -19,6 +19,7 @@ class TaskHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         private const val COLUMN_DESCRIPTION = "description"
         private const val COLUMN_DATE = "date"
         private const val COLUMN_LOCATION = "location"
+        private const val COLUMN_STATUS = "status"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -27,6 +28,7 @@ class TaskHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, nu
                 "$COLUMN_TITLE TEXT, " +
                 "$COLUMN_DESCRIPTION TEXT, " +
                 "$COLUMN_DATE TEXT, " +
+                "$COLUMN_STATUS INT, " +
                 "$COLUMN_LOCATION TEXT)")
         db.execSQL(CREATE_TABLE_QUERY)
     }
@@ -43,15 +45,16 @@ class TaskHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         values.put(COLUMN_DESCRIPTION, todoItem.description)
         values.put(COLUMN_DATE, todoItem.date)
         values.put(COLUMN_LOCATION, todoItem.location)
+        values.put(COLUMN_STATUS, todoItem.status)
         val id = db.insert(TABLE_NAME, null, values)
         db.close()
         return id
     }
 
     @SuppressLint("Range")
-    fun getAllTodoItems(): ArrayList<Task> {
+    fun getAllTodoItems(status: Int): ArrayList<Task> {
         val todoItems = ArrayList<Task>()
-        val selectQuery = "SELECT * FROM $TABLE_NAME"
+        val selectQuery = "SELECT * FROM $TABLE_NAME WHERE status = $status"
         val db = this.readableDatabase
 
         db.rawQuery(selectQuery, null).use { cursor ->
@@ -62,7 +65,8 @@ class TaskHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, nu
                     val description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION))
                     val date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE))
                     val location = cursor.getString(cursor.getColumnIndex(COLUMN_LOCATION))
-                    val todoItem = Task(id, title, description, date, location)
+                    val status = cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS))
+                    val todoItem = Task(id, title, description, date, location, status)
                     todoItems.add(todoItem)
                 } while (cursor.moveToNext())
             }
@@ -80,6 +84,14 @@ class TaskHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         values.put(COLUMN_LOCATION, todoItem.location)
         return db.update(TABLE_NAME, values, "$COLUMN_ID = ?", arrayOf(todoItem.id.toString()))
     }
+    fun updateStatus(todoItem: Task, newStatus: Int): Int {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_STATUS, newStatus)
+        }
+        return db.update(TABLE_NAME, values, "$COLUMN_ID = ?", arrayOf(todoItem.id.toString()))
+    }
+
 
     fun deleteTodoItem(todoItem: Task): Int {
         val db = this.writableDatabase
