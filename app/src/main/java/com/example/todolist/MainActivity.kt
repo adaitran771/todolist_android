@@ -1,7 +1,9 @@
 package com.example.todolist
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.DialogInterface
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.ContextMenu
@@ -21,6 +23,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.add_task_dialog.*
 import kotlinx.android.synthetic.main.lv_item.*
 import kotlinx.android.synthetic.main.lv_item.view.*
+import java.io.Serializable
 
 
 class MainActivity : AppCompatActivity() {
@@ -132,19 +135,64 @@ class MainActivity : AppCompatActivity() {
     override fun onContextItemSelected(item: MenuItem): Boolean {
         //lấy thông tin dòng kích hoạt contextmenu
         val info = item.menuInfo as AdapterView.AdapterContextMenuInfo
+        val position = info.position
+        val selectedItem = TaskAdapter.getItem(position) as? Task
+
         return when (item.itemId) {
             R.id.edit -> {
                 // TODO:  chức năng sửa ở đây
-                Toast.makeText(this, "Edit item at position ${info?.position}", Toast.LENGTH_SHORT).show()
+                selectedItem?.let {
+                    editItem(it)
+                    Toast.makeText(this, "Edit item at position ${info?.position}", Toast.LENGTH_SHORT).show()
+                }
                 true
             }
             R.id.done -> {
 
                 // TODO:  chức năng xóa ở đây
-                Toast.makeText(this, "Done item at position ${info?.position}", Toast.LENGTH_SHORT).show()
+                selectedItem?.let {
+                    TaskAdapter.remove(it)
+                    TaskAdapter.notifyDataSetChanged()
+                    Toast.makeText(this, "Done item at position $position", Toast.LENGTH_SHORT).show()
+                }
                 true
             }
             else -> super.onContextItemSelected(item)
         }
+    }
+    private fun editItem(item: Task) {
+        val intent = Intent(this, EditTaskActivity::class.java)
+        intent.putExtra("taskToEdit", item as Serializable) // Truyền Task cần sửa thông qua Intent
+        startActivityForResult(intent, EDIT_TASK_REQUEST_CODE) // Khởi chạy EditTaskActivity
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == EDIT_TASK_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // Nhận Task đã sửa từ Intent
+            val editedTask = data?.getSerializableExtra("editedTask") as? Task
+
+            // Kiểm tra nếu Task không null và thực hiện cập nhật
+            editedTask?.let {
+                updateTaskInList(it)
+                Toast.makeText(this, "Task edited: ${it.title}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun updateTaskInList(editedTask: Task) {
+        for (i in itemList.indices) {
+            if (itemList[i].id == editedTask.id) {
+                itemList[i] = editedTask
+                TaskAdapter.notifyDataSetChanged()
+                break
+            }
+        }
+    }
+
+    companion object {
+        private const val EDIT_TASK_REQUEST_CODE = 101
     }
 }
