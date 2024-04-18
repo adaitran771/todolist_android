@@ -10,29 +10,36 @@
     tools:context=".MainActivity">
 
 
-
-    <!-- EditText for task location -->
-
-    <!-- Button to add task -->
     <TextView
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Task Chưa Hoàn Thành" />
 
+    <!-- Nút để thêm công việc, với hiệu ứng độ mờ và xoay -->
     <Button
         android:id="@+id/btnAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add"
-        android:layout_marginTop="8dp"/>
+        android:text="Thêm"
+        android:layout_marginTop="8dp"
+        android:animation="@anim/rotate_anim" />
 
-    <!-- ListView to display tasks -->
+    <!-- TextView để mô tả công việc, với hiệu ứng thu phóng -->
+    <TextView
+        android:id="@+id/tvDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mô tả công việc"
+        android:layout_marginTop="16dp"
+        android:animation="@anim/scale_anim" />
+
+    <!-- ListView để hiển thị danh sách công việc, với hiệu ứng mờ -->
     <ListView
         android:id="@+id/lvCongViec"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        android:animation="@anim/fade_anim" />
 
 </LinearLayout>

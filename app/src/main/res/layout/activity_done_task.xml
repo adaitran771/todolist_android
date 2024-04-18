@@ -9,23 +9,18 @@
     android:padding="16dp"
     tools:context=".DoneTask">
 
-
-
-
-
-    <!-- ListView to display tasks -->
+    <!-- Tiêu đề "Task Đã Hoàn Thành" -->
     <TextView
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16dp"
-        android:text="Task Đã Hoàn Thành" />
+        android:hint="Task Đã Hoàn Thành" />
 
+    <!-- ListView để hiển thị các công việc đã hoàn thành -->
     <ListView
         android:id="@+id/lvCongViec"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:layout_marginTop="16dp"/>
 
 </LinearLayout>

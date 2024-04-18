@@ -10,10 +10,10 @@ import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.AdapterView
 import android.widget.Button
 import android.widget.EditText
-
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -25,7 +25,6 @@ import kotlinx.android.synthetic.main.lv_item.*
 import kotlinx.android.synthetic.main.lv_item.view.*
 import java.io.Serializable
 
-
 class MainActivity : AppCompatActivity() {
     val Done = 1
     val notDone = 0
@@ -33,82 +32,98 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var taskHelper: TaskHelper
     lateinit var TaskAdapter: lvAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //đăng kí context menu cho listview
+
+        // Đăng kí context menu cho ListView
         registerForContextMenu(lvCongViec)
-        //khởi tạo đối tượng thao tác với database
+
+        // Khởi tạo đối tượng thao tác với cơ sở dữ liệu
         taskHelper = TaskHelper(this)
-        //lấy tất cả Task
+
+        // Lấy tất cả Task
         itemList = taskHelper.getAllTodoItems(notDone)
-        //khởi tạo adapter cho listview
+
+        // Khởi tạo adapter cho ListView
         TaskAdapter = lvAdapter(this, itemList)
         lvCongViec.adapter = TaskAdapter
 
-        // nút thêm task
+        // Nút thêm task
         val btnAdd = findViewById<Button>(R.id.btnAdd)
         btnAdd.setOnClickListener{
-            //tạo alertDialog
+            // Tạo alertDialog
             val formAdd_dialog = AlertDialog.Builder(this)
-            // tạo đối tượng view để nhập task - formAdd
+
+            // Tạo đối tượng view để nhập task - formAdd
             val formAdd = layoutInflater.inflate(R.layout.add_task_dialog, null)
-            // các đối tượng trong formAdd
+
+            // Các đối tượng trong formAdd
             val edtTitle = formAdd.findViewById<EditText>(R.id.edttitle)
             val edtDate = formAdd.findViewById<EditText>(R.id.edtDate)
             val edtLocation = formAdd.findViewById<EditText>(R.id.edtLocation)
             val edtDes = formAdd.findViewById<EditText>(R.id.edtdes)
-            //nút thêm trong formAdd
+
+            // Nút thêm trong formAdd
             val add = formAdd.findViewById<Button>(R.id.btnAdd)
+
+            // Thêm animation cho nút thêm
+            val rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate_anim)
+            add.startAnimation(rotateAnimation)
 
             add.setOnClickListener {
                 if(!edtTitle.text.toString().isEmpty() &&
                     !edtDate.text.toString().isEmpty() &&
                     !edtLocation.text.toString().isEmpty() &&
                     !edtDes.text.toString().isEmpty() ) {
-                    Toast.makeText(this, "nhap thanh cong",Toast.LENGTH_SHORT).show()
-                    // add task thành công và thoát dialog
+                    Toast.makeText(this, "Nhập thành công",Toast.LENGTH_SHORT).show()
+
+                    // Add task thành công và thoát dialog
                     val Item = Task(0, edtTitle.text.toString(),
-                                          edtDes.text.toString(),
-                                          edtDate.text.toString(),
-                                          edtLocation.text.toString(),
-                                          notDone)
-                    //thêm vào list ảo
+                        edtDes.text.toString(),
+                        edtDate.text.toString(),
+                        edtLocation.text.toString(),
+                        notDone)
+
+                    // Thêm vào list ảo
                     itemList.add(Item)
                     edtTitle.setText("")
                     edtDes.setText("")
                     edtDate.setText("")
                     edtLocation.setText("")
-                    //thêm vào database
+
+                    // Thêm vào database
                     taskHelper.addTodoItem(Item)
                     TaskAdapter.notifyDataSetChanged()
 
                 } else {
-                    Toast.makeText(this, "nhap thieu",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Nhập thiếu",Toast.LENGTH_SHORT).show()
                 }
 
             }
 
-            //////
+            // Set animation cho dialog
+            val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+            formAdd.startAnimation(fadeIn)
+
             formAdd_dialog.setNegativeButton("Hủy", DialogInterface.OnClickListener { dialog, which ->
                 dialog.cancel()
             })
-            formAdd_dialog.setView(formAdd).create().show()
 
+            formAdd_dialog.setView(formAdd).create().show()
         }
 
-        //mở context menu khi click vào mỗi hàng listview
+        // Mở context menu khi click vào mỗi hàng ListView
         lvCongViec.setOnItemClickListener { parent, view, position, id ->
-            var alert = AlertDialog.Builder(this)
+            val alert = AlertDialog.Builder(this)
             alert.setTitle("Hoàn Thành")
-            alert.setMessage("Bạn Có Chắc Đã Xong? Nhấn Yes Để Xác nhận !")
+            alert.setMessage("Bạn có chắc đã xong? Nhấn Yes để xác nhận!")
             alert.setCancelable(true)
             alert.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
-                taskHelper.updateStatus(itemList[position],Done)
+                taskHelper.updateStatus(itemList[position], Done)
                 itemList.removeAt(position)
                 TaskAdapter.notifyDataSetChanged()
-                //xóa item đã chọn trong database
-
             })
             alert.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which ->
                 dialog.cancel()
@@ -122,6 +137,7 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu, menu)
         return true
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.done -> {
@@ -147,48 +163,54 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
-        //lấy thông tin dòng kích hoạt contextmenu
+        // Lấy thông tin dòng kích hoạt contextmenu
         val info = item.menuInfo as AdapterView.AdapterContextMenuInfo
         val position = info.position
 
-
         return when (item.itemId) {
             R.id.edit -> {
-                // TODO:  chức năng sửa ở đây
+                // TODO: Chức năng sửa ở đây
                 val selectedItem = itemList[position]
                 val formEdit_dialog = AlertDialog.Builder(this)
-                // tạo đối tượng view để nhập task - formAdd
+
+                // Tạo đối tượng view để nhập task - formAdd
                 val formEdit = layoutInflater.inflate(R.layout.add_task_dialog, null)
-                // các đối tượng trong formEdit
+
+                // Các đối tượng trong formEdit
                 val edtTitle = formEdit.findViewById<EditText>(R.id.edttitle)
                 val edtDate = formEdit.findViewById<EditText>(R.id.edtDate)
                 val edtLocation = formEdit.findViewById<EditText>(R.id.edtLocation)
                 val edtDes = formEdit.findViewById<EditText>(R.id.edtdes)
-                //nút sửa trong formEdit
+
+                // Nút sửa trong formEdit
                 val Edit = formEdit.findViewById<Button>(R.id.btnAdd)
                 Edit.setText("OK")
-                // gắn nội dung cũ vào form
+
+                // Gắn nội dung cũ vào form
                 edtTitle.setText(selectedItem.title)
                 edtDate.setText(selectedItem.date)
                 edtLocation.setText(selectedItem.location)
                 edtDes.setText(selectedItem.description)
-                //
+
+                // Set animation cho dialog
+                val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+                formEdit.startAnimation(fadeIn)
+
                 Edit.setOnClickListener {
                     if (!edtTitle.text.toString().isEmpty() &&
                         !edtDate.text.toString().isEmpty() &&
                         !edtLocation.text.toString().isEmpty() &&
                         !edtDes.text.toString().isEmpty()
                     ) {
-                        Toast.makeText(this, "sua thanh cong", Toast.LENGTH_SHORT).show()
-                        // sửa task thành công và thoát dialog
+                        Toast.makeText(this, "Sửa thành công", Toast.LENGTH_SHORT).show()
+
+                        // Sửa task thành công và thoát dialog
                         selectedItem.title = edtTitle.text.toString()
                         selectedItem.date = edtDate.text.toString()
                         selectedItem.location = edtLocation.text.toString()
                         selectedItem.description = edtDes.text.toString()
-                        //sửa vào list ảo
 
-
-                        //sửa vào database
+                        // Sửa vào database
                         taskHelper.updateTodoItem(selectedItem)
                         TaskAdapter.notifyDataSetChanged()
                     }
@@ -197,30 +219,27 @@ class MainActivity : AppCompatActivity() {
                         "Edited item at position ${info?.position}",
                         Toast.LENGTH_SHORT
                     ).show()
-
-
                 }
+
                 formEdit_dialog.setNegativeButton("Hủy", DialogInterface.OnClickListener { dialog, which ->
                     dialog.cancel()
                 })
+
                 formEdit_dialog.setView(formEdit).create().show()
                 true
             }
             R.id.done -> {
-
-                // TODO:  chức năng xóa ở đây
-                var alert = AlertDialog.Builder(this)
+                // TODO: Chức năng xóa ở đây
+                val alert = AlertDialog.Builder(this)
                 alert.setTitle("Xóa Task ?")
-                alert.setMessage("Bạn Có Muốn Xóa ? Nhấn Yes Để Xác nhận !")
+                alert.setMessage("Bạn có muốn xóa ? Nhấn Yes để xác nhận !")
                 alert.setCancelable(true)
                 alert.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
-                    //xóa item đã chọn trong database
+                    // Xóa item đã chọn trong database
                     taskHelper.deleteTodoItem(itemList[position])
-                    //xóa item trên list ảo
+                    // Xóa item trên list ảo
                     itemList.removeAt(position)
                     TaskAdapter.notifyDataSetChanged()
-
-
                 })
                 alert.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which ->
                     dialog.cancel()
@@ -232,12 +251,4 @@ class MainActivity : AppCompatActivity() {
             else -> super.onContextItemSelected(item)
         }
     }
-
-
-
-
-
 }
-
-
-

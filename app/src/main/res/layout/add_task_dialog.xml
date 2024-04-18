@@ -3,48 +3,55 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/addtask">
-    <!-- EditText for task title -->
+    android:id="@+id/addtask"
+    android:animateLayoutChanges="true"> <!-- Thêm thuộc tính animateLayoutChanges để kích hoạt animation -->
+
+    <!-- EditText cho tiêu đề công việc với hiệu ứng phát nhạc nhẹ -->
     <EditText
         android:id="@+id/edttitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter task title"
+        android:hint="Nhập tiêu đề công việc"
         android:textStyle="italic"
-        android:padding="8dp"/>
+        android:padding="8dp"
+        android:animation="@anim/bounce_anim"/> <!-- Thêm thuộc tính animation với hiệu ứng bounce_anim -->
 
-    <!-- EditText for task date -->
+    <!-- EditText cho ngày công việc với hiệu ứng xoay -->
     <EditText
         android:id="@+id/edtDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter date"
+        android:hint="Nhập ngày"
         android:inputType="date"
-        android:padding="8dp"/>
+        android:padding="8dp"
+        android:animation="@anim/rotate_anim"/> <!-- Thêm thuộc tính animation với hiệu ứng rotate_anim -->
 
-    <!-- EditText for task location -->
+    <!-- EditText cho địa điểm công việc với hiệu ứng phóng to -->
     <EditText
         android:id="@+id/edtLocation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter location"
-        android:padding="8dp"/>
+        android:hint="Nhập địa điểm"
+        android:padding="8dp"
+        android:animation="@anim/scale_anim"/> <!-- Thêm thuộc tính animation với hiệu ứng scale_anim -->
 
-    <!-- EditText for task description -->
+    <!-- EditText cho mô tả công việc với hiệu ứng mờ -->
     <EditText
         android:id="@+id/edtdes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter description"
-        android:padding="8dp"/>
+        android:hint="Nhập mô tả"
+        android:padding="8dp"
+        android:animation="@anim/fade_anim"/> <!-- Thêm thuộc tính animation với hiệu ứng fade_anim -->
 
-    <!-- Button to add task -->
+    <!-- Button để thêm công việc với hiệu ứng di chuyển -->
     <Button
         android:id="@+id/btnAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Add"
-        android:layout_marginTop="8dp"/>
+        android:text="Thêm"
+        android:layout_marginTop="8dp"
+        android:animation="@anim/translate_anim"/> <!-- Thêm thuộc tính animation với hiệu ứng translate_anim -->
 
 </LinearLayout>
