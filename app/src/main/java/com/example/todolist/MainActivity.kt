@@ -122,6 +122,20 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu, menu)
         return true
     }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.done -> {
+                val intent = Intent(this, DoneTask::class.java)
+                startActivity(intent)
+                true
+            }
+            R.id.notdone -> {
+                // Xử lý khi click vào Menu Item 2
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
     override fun onCreateContextMenu(
         menu: ContextMenu?,
@@ -136,63 +150,94 @@ class MainActivity : AppCompatActivity() {
         //lấy thông tin dòng kích hoạt contextmenu
         val info = item.menuInfo as AdapterView.AdapterContextMenuInfo
         val position = info.position
-        val selectedItem = TaskAdapter.getItem(position) as? Task
+
 
         return when (item.itemId) {
             R.id.edit -> {
                 // TODO:  chức năng sửa ở đây
-                selectedItem?.let {
-                    editItem(it)
-                    Toast.makeText(this, "Edit item at position ${info?.position}", Toast.LENGTH_SHORT).show()
+                val selectedItem = itemList[position]
+                val formEdit_dialog = AlertDialog.Builder(this)
+                // tạo đối tượng view để nhập task - formAdd
+                val formEdit = layoutInflater.inflate(R.layout.add_task_dialog, null)
+                // các đối tượng trong formEdit
+                val edtTitle = formEdit.findViewById<EditText>(R.id.edttitle)
+                val edtDate = formEdit.findViewById<EditText>(R.id.edtDate)
+                val edtLocation = formEdit.findViewById<EditText>(R.id.edtLocation)
+                val edtDes = formEdit.findViewById<EditText>(R.id.edtdes)
+                //nút sửa trong formEdit
+                val Edit = formEdit.findViewById<Button>(R.id.btnAdd)
+                Edit.setText("OK")
+                // gắn nội dung cũ vào form
+                edtTitle.setText(selectedItem.title)
+                edtDate.setText(selectedItem.date)
+                edtLocation.setText(selectedItem.location)
+                edtDes.setText(selectedItem.description)
+                //
+                Edit.setOnClickListener {
+                    if (!edtTitle.text.toString().isEmpty() &&
+                        !edtDate.text.toString().isEmpty() &&
+                        !edtLocation.text.toString().isEmpty() &&
+                        !edtDes.text.toString().isEmpty()
+                    ) {
+                        Toast.makeText(this, "sua thanh cong", Toast.LENGTH_SHORT).show()
+                        // sửa task thành công và thoát dialog
+                        selectedItem.title = edtTitle.text.toString()
+                        selectedItem.date = edtDate.text.toString()
+                        selectedItem.location = edtLocation.text.toString()
+                        selectedItem.description = edtDes.text.toString()
+                        //sửa vào list ảo
+
+
+                        //sửa vào database
+                        taskHelper.updateTodoItem(selectedItem)
+                        TaskAdapter.notifyDataSetChanged()
+                    }
+                    Toast.makeText(
+                        this,
+                        "Edited item at position ${info?.position}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+
                 }
+                formEdit_dialog.setNegativeButton("Hủy", DialogInterface.OnClickListener { dialog, which ->
+                    dialog.cancel()
+                })
+                formEdit_dialog.setView(formEdit).create().show()
                 true
             }
             R.id.done -> {
 
                 // TODO:  chức năng xóa ở đây
-                selectedItem?.let {
-                    TaskAdapter.remove(it)
+                var alert = AlertDialog.Builder(this)
+                alert.setTitle("Xóa Task ?")
+                alert.setMessage("Bạn Có Muốn Xóa ? Nhấn Yes Để Xác nhận !")
+                alert.setCancelable(true)
+                alert.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
+                    //xóa item đã chọn trong database
+                    taskHelper.deleteTodoItem(itemList[position])
+                    //xóa item trên list ảo
+                    itemList.removeAt(position)
                     TaskAdapter.notifyDataSetChanged()
-                    Toast.makeText(this, "Done item at position $position", Toast.LENGTH_SHORT).show()
-                }
+
+
+                })
+                alert.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which ->
+                    dialog.cancel()
+                })
+                alert.create()
+                alert.show()
                 true
             }
             else -> super.onContextItemSelected(item)
         }
     }
-    private fun editItem(item: Task) {
-        val intent = Intent(this, EditTaskActivity::class.java)
-        intent.putExtra("taskToEdit", item as Serializable) // Truyền Task cần sửa thông qua Intent
-        startActivityForResult(intent, EDIT_TASK_REQUEST_CODE) // Khởi chạy EditTaskActivity
-    }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == EDIT_TASK_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            // Nhận Task đã sửa từ Intent
-            val editedTask = data?.getSerializableExtra("editedTask") as? Task
 
-            // Kiểm tra nếu Task không null và thực hiện cập nhật
-            editedTask?.let {
-                updateTaskInList(it)
-                Toast.makeText(this, "Task edited: ${it.title}", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
 
-    private fun updateTaskInList(editedTask: Task) {
-        for (i in itemList.indices) {
-            if (itemList[i].id == editedTask.id) {
-                itemList[i] = editedTask
-                TaskAdapter.notifyDataSetChanged()
-                break
-            }
-        }
-    }
-
-    companion object {
-        private const val EDIT_TASK_REQUEST_CODE = 101
-    }
 }
+
+
+
